@@ -1,4 +1,4 @@
-# Copyright (c) Tudor Oancea, 2022
+# Copyright (c) Tudor Oancea, 2023
 # create virtual environment (optional)
 if [ -d "venv*" ]
 then

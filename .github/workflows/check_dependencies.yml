@@ -1,4 +1,4 @@
-# Copyright (c) Tudor Oancea, 2022
+# Copyright (c) Tudor Oancea, 2023
 
 name: Check that that all the listed dependencies in requirements.txt and requirements_dev.txt are specified with a specific git tag
 on:

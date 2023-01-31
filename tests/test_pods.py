@@ -1,12 +1,14 @@
+# Copyright (c) Tudor Oancea, 2023
+
 import re
 import warnings
-
-from inspect import getmembers, isroutine
-from strongpods import *
 from enum import Enum
-from typing import Union, Optional, get_args
-import pytest
+from typing import Union, Optional
+
 import numpy as np
+import pytest
+
+from strongpods import *
 
 
 class DummyEnum(Enum):
@@ -107,11 +109,6 @@ def test_subparams_calls_superclass():
 
 
 def test_impossible_cast_throws():
-    param_names = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
-    # with warnings.catch_warnings():
-    #     warnings.simplefilter("ignore")
-    #     with pytest.raises(TypeError):
-    #         pass
     set_verbosity_level(1)
     with pytest.warns(UserWarning) as record:
         bruh = DummyParams(
@@ -130,27 +127,3 @@ def test_impossible_cast_throws():
             re.search(r"value for field \w cannot be cast to", r.message.args[0])
             is not None
         ), f'message "{r.message.args[0]}" does not match regex'
-
-    # assert set(map(lambda x: x.message.args[0], record)) == {
-    #     f"value for field {param_name} cannot be casted to"
-    #     for param_name in param_names
-    # }
-    # for param_name in param_names:
-    #     if hasattr(bruh, param_name):
-    #         pytest.fail(
-    #             f"field {param_name} should not have been set but it was set to {getattr(bruh, param_name)}"
-    #         )
-    # set_verbosity_level(2)
-    # with pytest.raises(Exception) as e:
-    #     bruh = DummyParams(
-    #         a=[],
-    #         b=[],
-    #         c=[0.0],
-    #         d=None,
-    #         e="b",
-    #         f=0,
-    #         g=4.0,
-    #         h=0.0,
-    #         i="E3",
-    #     )
-    # assert str(e.value).startswith("value for field")

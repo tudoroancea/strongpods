@@ -1,4 +1,5 @@
-name: Python package
+# Copyright (c) Tudor Oancea, 2023
+name: Python test and build
 
 on:
   pull_request:

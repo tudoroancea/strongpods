@@ -8,7 +8,7 @@ from .helpers import isoptional, isenum, isunion
 __all__ = ["PODS", "set_verbosity_level", "VERBOSITY_LEVEL"]
 
 
-VERBOSITY_LEVEL = 0
+VERBOSITY_LEVEL = 1
 
 
 def set_verbosity_level(level: int):

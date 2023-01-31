@@ -1,3 +1,5 @@
+# Copyright (c) Tudor Oancea, 2023
+
 from enum import Enum
 from typing import get_origin, Union, get_args
 
