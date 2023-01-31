@@ -13,10 +13,17 @@ with open("requirements.txt", "r") as fh:
         for r in requirements
         if not (r.startswith("#") or r.startswith("-e git+") or r.startswith("git+"))
     ]
+    requirements_dev = fh.read().splitlines()
+    # remove lines that start with #
+    requirements_dev = [
+        r
+        for r in requirements_dev
+        if not (r.startswith("#") or r.startswith("-e git+") or r.startswith("git+"))
+    ]
 
 setup(
-    name="python_boilerplate",
-    version="2.0.2",
+    name="strongpods",
+    version="1.0.0",
     url="",
     author="Tudor Oancea",
     license="MIT",
@@ -33,6 +40,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Private :: Do Not Upload",
     ],
-    packages=find_packages(include=["python_boilerplate"]),
+    packages=find_packages(include=["strongpods"]),
     install_requires=requirements,
+    extras_require={
+        "dev": requirements_dev,
+    },
 )

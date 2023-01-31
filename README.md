@@ -1,45 +1,42 @@
-# python_boilerplate
+base class used to define PODS with fixed attributes with fixed types and easily accessible as attributes.
 
-This repo contains a GitHub template for a complete Python project with support for:
+advantages over `typing.TypedDict`:
 
-- using virtual environments
-- using separate requirements files for project and dev dependencies
-- installing the project as a local _editable_ package to easily import it in any test
-  file without having to use `sys.path.append()`
-- efficiently working in [Gitpod](https://gitpod.io) with a pre-configured
-  [`gitpod.yml`](.gitpod.yml) file and pre-builds
-- using [black](https://black.readthedocs.io/en/stable/) for code formatting
-  manually and/or via [pre-commit](https://pre-commit.com) and/or with a GitHub
-  Actions workflow that checks the code formatting at each push and pull-request on the
-  `main` branch.
-- using GitHub actions workflows to:
-  - parse the title of each pull request on the `main` branch and extract new version
-    number (`v*.*.*`)
-  - check that the [`CHANGELOG.md`](CHANGELOG.md) file has been updated with the new
-    version number
-  - check that the [`setup.py`](setup.py) file has been updated with the new version number
-  - create a git tag on `main` once the pull-request is merged
+- the specified types of each attribute are enforced at initialization
+- you can use inheritance mechanisms to define common set of attributes for several PODS
+- the attributes are accessible as such, not via keys in a dict that you may not remember.
+  This also allows the IDE to provide autocompletion.
+- supports default values (defined as class attributes)
 
-This is a list of the current features implemented, more will come with time.
+Supported types:
 
-## How to use this template
+- any type such that the provided value can be cast to it. This means most python base
+  types, data structures and user defined classes that do require more that a single value
+  in their initializer
+- Enums (subclasses of `enum.Enum`)
+- `typing.Optional` of any type of the first kind
+- `typing.Union`
 
-1. Click on the `Use this template` button on the GitHub page of this repo to create
-   a new repo.
-![use this template](images/use_this_template.png)
-Don't check the "Include all branches" option.
-Once the repo is created, go in the repo settings and to the Pull requests section
-to choose this option:
-![pull requests](images/pr_merge_options.png)
+Error handling behaviors: (either warnings or errors can be launched depending on a global
+configuration variable).
 
-2. Once you cloned the repo, you can rename the `python_boilerplate` package in the
-   `setup.py` file and the `python_boilerplate` folder. In PyCharm, you can just
-   rename the first one and it will automatically rename the folder. You can also
-   modify the other fields in the `setup.py` file, delete the `images` folder and
-   the content of the `README.md` and `CHANGELOG.md` files. You can then add your
-   files and start working on your project.
+let’s suppose we have defined a PODS `A` with an attributed `a` of type `T` and that we
+initialize the instance of `A` with a dict of keyword arguments called `kwargs`
 
-3. To install all the dependencies you can use the [`setup_workspace.sh`](scripts/setup_workspace.sh)
-   script. It will create a virtual environment, install the project as an editable
-   package and install the regular and dev dependencies, and install black and pre-commit.
-   > If you use Gitpod, you don't need to run this script, it is already done for you.
+- if a value for `a` is not present in `kwargs` **and** `a` not have a default value
+  **and** `T` is not an Optional, a warning/error is raised
+- if we cannot create an instance of `T` with the value `kwargs["a"]` , a warning/error is
+  raised. The following specific cases are considered:
+    - if `T` is an Enum and `kwargs["a"]` is not an instance of this enum and cannot be
+      cast to `str`
+    - if `T` is `Optional[U]` and `kwargs["a"]` cannot be cast to `U`
+    - if `T` is `Union[U,...]` and `kwargs["a"]` cannot be cast to `U` or any other type in
+      the union
+    - in all other cases, if the cast `T(kwargs["a"])` fails
+- if no default value was set for `a` and no value cannot be created from `kwargs["a"]`,
+  we do not set the attribute `a` in the instance of `A`.
+
+verbosity levels:
+- 0: we never raise anything
+- 1: we raise warnings
+- 2: we raise errors
