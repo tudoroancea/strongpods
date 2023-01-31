@@ -22,5 +22,5 @@ jobs:
           pip install -r requirements_dev.txt
           pip install -e .
       - name: Test with pytest
-        run: pytest
-        cwd: tests
+        run: pytest -v
+        working-directory: tests
