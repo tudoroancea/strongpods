@@ -1,4 +1,7 @@
 # strongpods
+[![Python test and build](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml/badge.svg)](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml)
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"/></a>
+
 The name stands for _Strongly Typed PODS_ (Plain Old Data Structures).
 This library offers a simple and robust alternative to `typing.TypedDict` to define PODS.
 You can define them easily by subclassing `strongpods.PODS` and specifying the attributes:
