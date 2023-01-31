@@ -3,6 +3,8 @@ import warnings
 from inspect import getmembers, isroutine
 from typing import Tuple, get_args, Union
 
+import numpy as np
+
 from .helpers import isoptional, isenum, isunion
 
 __all__ = ["PODS", "set_verbosity_level", "VERBOSITY_LEVEL"]
@@ -123,7 +125,10 @@ class PODS:
                     continue
                 else:
                     try:
-                        res[param_name] = param_type(param_value)
+                        if param_type is np.ndarray:
+                            res[param_name] = np.asarray(param_value)
+                        else:
+                            res[param_name] = param_type(param_value)
                     except Exception as e:
                         msg(
                             f"value for field {param_name} cannot be cast to {param_type}, error message: {e}",
