@@ -4,7 +4,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "safetynator"
+name = "strongpods"
 version = "2.0.0"
 authors = [{ name = "Tudor Oancea", email = "oancea.tudor@icloud.com" }]
 dependencies = ["numpy"]
