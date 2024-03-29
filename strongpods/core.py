@@ -106,7 +106,7 @@ def _transform_dict(cls, kwargs: dict) -> Tuple[dict, dict]:
             if __is_union(attribute_type):
                 possible_attribute_types = get_args(attribute_type)
                 if (
-                    len(possible_attribute_types == 2)
+                    len(possible_attribute_types) == 2
                     and type(None) in possible_attribute_types
                 ):
                     # we treat it as an optional
