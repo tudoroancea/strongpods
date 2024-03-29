@@ -1,14 +1,12 @@
-# Copyright (c) Tudor Oancea, 2023
-
 import re
 import warnings
 from enum import Enum
-from typing import Union, Optional
+from typing import Optional, Union
 
 import numpy as np
 import pytest
 
-from strongpods import PODS, set_verbosity_level, VerbosityLevel
+from strongpods import PODS, VerbosityLevel, set_verbosity_level
 
 
 class DummyEnum(Enum):
@@ -17,7 +15,8 @@ class DummyEnum(Enum):
     E2 = 2
 
 
-class DummyParams(PODS):
+@PODS
+class DummyParams:
     a: int
     b: str
     c: float
@@ -28,21 +27,10 @@ class DummyParams(PODS):
     h: Optional[int]
     i: DummyEnum = DummyEnum.E0
 
-    def __init__(self, **kwargs):
-        current_params, remaining_params = DummyParams._transform_dict(kwargs)
-        for key, val in current_params.items():
-            setattr(self, key, val)
-        super().__init__(**remaining_params)
 
-
+@PODS
 class SubDummyParams(DummyParams):
     j: int
-
-    def __init__(self, **kwargs):
-        current_params, remaining_params = SubDummyParams._transform_dict(kwargs)
-        for key, val in current_params.items():
-            setattr(self, key, val)
-        super().__init__(**remaining_params)
 
 
 default_params = {
@@ -91,7 +79,7 @@ def test_cast_works():
                 a="1", b=2, c="3", d="True", e=[1, 2, 3], f="E1", g=4, h=None, i="E2"
             )
     except Exception as e:
-        pytest.fail(e)
+        pytest.fail(str(e))
 
 
 def test_subparams_calls_superclass():
