@@ -1,12 +1,21 @@
-import re
-import warnings
 from enum import Enum
 from typing import Optional, Union
 
 import numpy as np
 import pytest
 
-from strongpods import PODS, VerbosityLevel, set_verbosity_level
+from strongpods import (
+    PODS,
+    VerbosityLevel,
+    is_PODS,
+    set_verbosity_level,
+)
+from strongpods.core import (
+    _is_enum,
+    _is_optional,
+    _is_union,
+    _log_error,
+)
 
 set_verbosity_level(VerbosityLevel.ERRORS)
 
@@ -42,7 +51,6 @@ class TestUnspecifiedKWArgs:
         except ValueError as e:
             pytest.fail(f"Unexpected error: {e}")
 
-    @pytest.mark.skip(reason="Skipping this test")
     def test_optional_with_default_value(self):
         @PODS
         class T:
@@ -83,7 +91,6 @@ class TestOptionalType:
 
 
 class TestUnionType:
-    # TODO: rename this test.
     def test_union_with_none_type_and_more_than_one_type(self):
         @PODS
         class T:
@@ -142,7 +149,7 @@ class TestEnumType:
         assert isinstance(t.a, TestEnumType.E)
         assert t.a == TestEnumType.E.E0
 
-    def test_enum_2(self):
+    def test_enum_from_string(self):
         @PODS
         class T:
             a: TestEnumType.E
@@ -153,6 +160,8 @@ class TestEnumType:
         t1 = T(a="E1")
         assert isinstance(t1.a, TestEnumType.E)
         assert t1.a == TestEnumType.E.E1
+        with pytest.raises(KeyError):
+            T(a="E2")
 
     def test_enum_3(self):
         @PODS
@@ -231,3 +240,95 @@ class TestNumpyType:
         t = T(a=(1, 2, 3))
         assert isinstance(t.a, np.ndarray)
         assert np.array_equal(t.a, np.array([1, 2, 3]))
+        t = T(a=np.arange(1, 4))
+        assert isinstance(t.a, np.ndarray)
+        assert np.array_equal(t.a, np.array([1, 2, 3]))
+
+
+class TestSubclassing:
+    def test_subclassing(self):
+        @PODS
+        class T:
+            a: int
+
+        @PODS
+        class T2(T):
+            b: str
+
+        t = T2(a=2, b="hello")
+        assert t.a == 2
+        assert t.b == "hello"
+
+
+class TestStringRepresentation:
+    def test_string_representation(self):
+        @PODS
+        class T:
+            a: int
+
+        t = T(a=2)
+        assert str(t) == "T(a=2)"
+
+
+def test_is_pods():
+    @PODS
+    class T:
+        a: int
+
+    class T2:
+        a: int
+
+    assert is_PODS(T)
+    assert not is_PODS(T2)
+
+
+class TestVerbosityLevel:
+    def test_warn(self):
+        set_verbosity_level(VerbosityLevel.WARNINGS)
+        with pytest.warns(UserWarning):
+            _log_error("warning", warning_type=UserWarning)
+        with pytest.warns(RuntimeWarning):
+            _log_error("warning", warning_type=RuntimeWarning)
+
+        @PODS
+        class T:
+            a: int
+
+        with pytest.warns(UserWarning):
+            T(a="a")
+
+    def test_error(self):
+        set_verbosity_level(VerbosityLevel.ERRORS)
+        with pytest.raises(ValueError):
+            _log_error("error", error_type=ValueError)
+        with pytest.raises(TypeError):
+            _log_error("error", error_type=TypeError)
+
+        @PODS
+        class T:
+            a: int
+
+        with pytest.raises(TypeError):
+            T(a="a")
+
+
+class TestTypeDeductionHelpers:
+    def test_is_optional(self):
+        assert _is_optional(Optional[int])
+        assert not _is_optional(int)
+        assert not _is_optional(127)
+
+    def test_is_enum(self):
+        class E(Enum):
+            E0 = 0
+            E1 = 1
+
+        assert _is_enum(E)
+        assert not _is_enum(int)
+        assert not _is_enum(127)
+
+    def test_is_union(self):
+        assert _is_union(Union[int, str])
+        assert not _is_union(int)
+        assert _is_union(Optional[int])
+        assert not _is_union(127)
