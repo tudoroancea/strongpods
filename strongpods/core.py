@@ -49,10 +49,7 @@ def _log_error(
 
 
 def _is_optional(t: type) -> bool:
-    try:
-        return get_origin(t) is Union and type(None) in get_args(t)
-    except TypeError:
-        return False
+    return get_origin(t) is Union and type(None) in get_args(t)
 
 
 def _is_enum(t: type) -> bool:
@@ -63,10 +60,7 @@ def _is_enum(t: type) -> bool:
 
 
 def _is_union(t: type) -> bool:
-    try:
-        return get_origin(t) is Union
-    except TypeError:
-        return False
+    return get_origin(t) is Union
 
 
 #####################################################################################################################
@@ -140,21 +134,17 @@ def __transform_dict(cls, kwargs: dict) -> Tuple[dict, dict]:
                             res[attribute_name] = param_value
                             coerced_to_type = True
                             break
-                    # TODO: try to get rid of the second for loop
                     if not coerced_to_type:
                         for T in possible_attribute_types:
-                            if T is not type(None):
-                                try:
-                                    res[attribute_name] = T(param_value)
-                                    break
-                                except ValueError as e:
-                                    _log_error(
-                                        f"value for field {attribute_name} cannot be cast to {T}, error message: {e}",
-                                        error_type=TypeError,
-                                    )
-                            else:
-                                # if it was None, it would have already been assigned
-                                pass
+                            # NOTE: we can't have T == type(None) here, because the case was treated in the first if (for optionals)
+                            try:
+                                res[attribute_name] = T(param_value)
+                                break
+                            except ValueError as e:
+                                _log_error(
+                                    f"value for field {attribute_name} cannot be cast to {T}, error message: {e}",
+                                    error_type=TypeError,
+                                )
             elif _is_enum(attribute_type):
                 # TODO: add possibility to cast from int
                 if isinstance(param_value, attribute_type):
