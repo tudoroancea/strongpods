@@ -2,20 +2,35 @@
 [![Python test and build](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml/badge.svg)](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"/></a>
 
-The name stands for _Strongly Typed PODS_ (Plain Old Data Structures).
-This library offers a simple and robust alternative to `typing.TypedDict` to define PODS.
-You can define them easily by subclassing `strongpods.PODS` and specifying the attributes:
+`strongpods` is a tiny and simple library for _Strongly typed Plain Old Data Structures_.
+
+Using it you can simply create a PODS using a decorator and C-style typed attribute declaration:
 ```python
 from strongpods import PODS
 
-class MyPODS(PODS):
-    a: int
-    b: str
-    c: float = 0.0
-
-my_pods = MyPODS(a=1, b="2")
-print(my_pods.a, my_pods.b, my_pods.c)
+@PODS
+class MyPODS:
+    an_int: int
+    a_list: list
 ```
+
+You can then initialize it using keyword arguments and an exception will be raised if the provided values don't have the specified typed or cannot be cast/coerced to these types.
+```python
+pods_instance = MyPODS(an_int=127, a_str="brains") # works
+pods_instance_2 = MyPODS(an_int="an irrational number", a_str="brains") # raises a ValueError because an_int cannot be converted to an int
+pods_instance_2 = MyPODS(an_int="an irrational number", a_str="brains") # raises a ValueError because an_int cannot be converted to an int
+```
+
+
+## Main features
+
+## Installation
+
+## Understanding and customizing strongpods errors
+
+## Comparison with other PODS solutions
+<!-- Talk about TypedDict, dataclass and Pydantic -->
+In the standard Python library, multiple solutions exist to create PODS.
 
 `strongpods.PODS` has the following advantages over `typing.TypedDict`:
 - the specified types of each attribute are enforced at initialization
@@ -29,8 +44,8 @@ It supports a variety of types that are correctly handled as assured by CI tests
   types, data structures and user defined classes that do require more that a single value
   in their initializer
 - Enums (subclasses of `enum.Enum`)
-- `typing.Optional` of any type of the first kind
 - `typing.Union`
+- `typing.Optional` (which amounts to `typing.Union[..., None]`
 
 ## Installation
 ```bash
