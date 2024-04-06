@@ -18,7 +18,7 @@ classifiers = [
 license = { file = "LICENSE.md" }
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest", "pytest-cov"]
 
 [tool.setuptools.packages.find]
 include = ["strongpods"]
