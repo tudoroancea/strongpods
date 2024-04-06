@@ -18,7 +18,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip uv
+          uv venv
+          source .venv/bin/activate
           uv pip install -e '.[test]'
       - name: Test with pytest
-        run: pytest -v
-        working-directory: tests
+        run: |
+          source .venv/bin/activate
+          pytest -v --cov=strongpods --cov-report term-missing tests
+        # working-directory: tests
