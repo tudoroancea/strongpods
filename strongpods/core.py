@@ -2,7 +2,7 @@
 import warnings
 from enum import Enum
 from inspect import getmembers, isroutine
-from typing import Tuple, Union, get_args, get_origin
+from typing import Tuple, Type, Union, get_args, get_origin
 
 import numpy as np
 
@@ -34,8 +34,8 @@ def set_verbosity_level(level: VerbosityLevel):
 
 def _log_error(
     msg: str,
-    warning_type: type[Warning] = UserWarning,
-    error_type: type[Exception] = ValueError,
+    warning_type: Type[Warning] = UserWarning,
+    error_type: Type[Exception] = ValueError,
 ):
     if __VERBOSITY_LEVEL == VerbosityLevel.WARNINGS:
         warnings.warn(msg, warning_type)
