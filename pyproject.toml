@@ -26,7 +26,7 @@ include = ["strongpods"]
 [tool.pyright]
 pythonVersion = "3.11"
 extraPaths = ["strongpods"]
-typeCheckingMode = "off"
+typeCheckingMode = "standard"
 # reportUnusedImport = "none"
 # reportUnusedVariable = "none"
 # reportUnusedFunction = "none"

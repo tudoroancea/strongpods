@@ -107,7 +107,7 @@ def __transform_dict(cls, kwargs: dict) -> Tuple[dict, dict]:
                     else:
                         other_type = (
                             possible_attribute_types[0]
-                            if possible_attribute_types[1] == type(None)
+                            if possible_attribute_types[1] is type(None)
                             else possible_attribute_types[1]
                         )
                         try:
@@ -118,7 +118,7 @@ def __transform_dict(cls, kwargs: dict) -> Tuple[dict, dict]:
                                 error_type=TypeError,
                             )
                 elif type(None) in possible_attribute_types:
-                    raise _log_error(
+                    _log_error(
                         "We don't support types of the form Union[None, ...] that are not optionals.",
                         error_type=NotImplementedError,
                     )
