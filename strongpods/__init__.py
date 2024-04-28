@@ -1,2 +1,2 @@
-# Copyright (c) Tudor Oancea, 2023
-from .pods import *
+# Copyright (c) 2024 Tudor Oancea
+from .core import *

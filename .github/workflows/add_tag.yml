@@ -1,5 +1,4 @@
-# Copyright (c) Tudor Oancea, 2023
-
+# Copyright (c) 2024 Tudor Oancea
 name: Add git tag versioning
 on:
   pull_request:
@@ -11,7 +10,7 @@ jobs:
     if: startsWith(github.event.pull_request.title, 'release') && github.event.pull_request.merged == true
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Add tag
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}

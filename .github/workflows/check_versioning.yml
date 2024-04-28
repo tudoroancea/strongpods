@@ -1,6 +1,5 @@
-# Copyright (c) Tudor Oancea, 2023
-
-name: Check the correct version is written in CHANGELOG.md and setup.py
+# Copyright (c) 2024 Tudor Oancea
+name: Check the correct version is written in CHANGELOG.md and pyproject.toml
 on:
   pull_request:
     branches:
@@ -12,7 +11,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-      - name: check version in setup.py
+      - name: check version in CHANGELOG.md
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
@@ -28,13 +27,13 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-      - name: check version in setup.py
+      - name: check version in pyproject.toml
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           echo $PR_TITLE | grep -e "release.*" || exit 1
           export VERSION=$(echo $PR_TITLE | sed -E 's/.* v([0-9\-\.]*)/\1/g')
-          if [[ $(grep "$VERSION" setup.py) == "" ]]; then
+          if [[ $(grep "$VERSION" pyproject.toml) == "" ]]; then
             echo "VERSION MISMATCH"
             exit 1
           fi
