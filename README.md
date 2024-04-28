@@ -3,7 +3,7 @@
 [![Python test and build](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml/badge.svg)](https://github.com/tudoroancea/strongpods/actions/workflows/python.yml)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"/></a>
 
-`strongpods` is a tiny and simple library for _Strongly typed Plain Old Data Structures_.
+`strongpods` is a tiny and simple library for _strongly typed Plain Old Data Structures (PODS)_.
 
 Using it you can create a simple PODS using a decorator and C-style attribute declaration using type annotations:
 
@@ -16,12 +16,13 @@ class MyPODS:
     a_list: list
 ```
 
-You can then initialize it using keyword arguments and an error will be emitted (see section [strongpods errors](#strongpods-errors)) if the provided values don't have the specified typed and cannot be cast to these types.
+You can then initialize it using keyword arguments and an error will be emitted if the provided values don't have the specified typed and cannot be cast to these types.
+See section [strongpods errors](#strongpods-errors) for more details.
 
 ```python
-pods_instance = MyPODS(an_int=127, a_str="brains") # works
-pods_instance_2 = MyPODS(an_int="an irrational number", a_str="brains") # raises a TypeError because an_int cannot be converted to an int
-pods_instance_3 = MyPODS(an_int="an irrational number", a_str="brains") # raises a TypeError because an_int cannot be converted to an int
+pods_instance = MyPODS(an_int=127, a_list=["brains"]) # works
+pods_instance_2 = MyPODS(an_int="an irrational number", a_list=["brains"]) # raises a TypeError because "an irrational number" cannot be converted to an int
+pods_instance_3 = MyPODS(an_int=127, a_list="brains") # raises a TypeError because "brains" cannot be converted to a list
 ```
 
 ## Installation
@@ -32,7 +33,7 @@ pip3 install git+https://github.com/tudoroancea/strongpods.git@v2.0.0#egg=strong
 
 ## Main features
 
-`strongpods` relies on the type annotations of the attributes to enforce the types at runtime.
+`strongpods` relies on type annotations of the attributes to enforce the types at runtime.
 If a given value can be cast to it (using the type casting rules described [below](#type-casting-rules)), it will, otherwise an error will be emitted (see section [strongpods errors](#strongpods-errors) for more details).
 The following types are supported:
 
@@ -44,15 +45,18 @@ The following types are supported:
 
 One can also define default values for attributes.
 
-The PODS defined with `strongpods` can also be subclassed and the attributes of the parent class will be inherited by the child class, while still maintaining the type enforcement.
+The PODS defined with `strongpods` can also be subclassed and the attributes of the parent class will be inherited by the child class, while still maintaining the type enforcement at runtime.
 
 
 ```python
 from strongpods import PODS
+
 @PODS
 class ParentPODS:
     an_int: int
     a_list: list
+
+@PODS
 class ChildPODS(ParentPODS):
     a_str: str
 ```
@@ -65,7 +69,10 @@ Suppose we have defined a PODS as
 class MyPODS:
   attr: Typ
 ```
-and try to construct an instance of `MyPODS` using `MyPODS(attr=val)` using a value `val` **which is not of type `Typ`**.
+and try to construct an instance of `MyPODS` using `MyPODS(attr=val)`.
+If `val` is of type `Typ`, the attribute `attr` will be initialized with the value `val`.
+Otherwise, `strongpods` will try to cast `val` to `Typ` using the following rules:
+- If `Typ` is a simple type (e.g. `int`, `str`, `float`, `bool`, `list`, `tuple` or `np.ndarray`), the type cast will be performed using `Typ(val)`.
 - If `Typ` is an enumeration, we can convert `val` if it is a string representing a member of the enumeraion. For example, if we defined
   ```python
   class Typ(Enum):
@@ -73,7 +80,7 @@ and try to construct an instance of `MyPODS` using `MyPODS(attr=val)` using a va
     Typ1 = 1
     Typ2 = 2
   ```
-  then we can provide the following are valid
+  then the following are valid
   ```python
   MyPODS(attr="Typ0")
   MyPODS(attr="Typ1")
@@ -91,28 +98,11 @@ and try to construct an instance of `MyPODS` using `MyPODS(attr=val)` using a va
 ## `strongpods` errors
 
 The way the errors are handled depends on the value of the global parameter
-`strongpods.VERBOSITY_LEVEL`:
+`strongpods.VERBOSITY_LEVEL` of type `strongpods.VerbosityLevel`:
 
-- 0: all errors are ignored
-- 1: warnings are raised via `warnings.warn`
-- 2: errors are raised
+- `SILENT`: all errors are ignored
+- `WARNINGS`: warnings are raised via `warnings.warn`
+- `ERRORS`: exceptions are raised
 
 You can manually change this value at any time in your code with
 `strongpods.set_verbosity_level()`.
-
-Here are the cases where an error can be raised: let’s suppose we have defined a PODS `A`
-with an attributed `a` of type `T` and that we initialize the instance of `A` with a dict
-of keyword arguments called `kwargs`
-
-- if a value for `a` is not present in `kwargs` **and** `a` not have a default value
-  **and** `T` is not an Optional, a warning/error is raised
-- if we cannot create an instance of `T` with the value `kwargs["a"]` , a warning/error is
-  raised. The following specific cases are considered:
-  - if `T` is an Enum and `kwargs["a"]` is not an instance of this enum and cannot be
-    cast to `str`
-  - if `T` is `Optional[U]` and `kwargs["a"]` cannot be cast to `U`
-  - if `T` is `Union[U,...]` and `kwargs["a"]` cannot be cast to `U` or any other type in
-    the union
-  - in all other cases, if the cast `T(kwargs["a"])` fails
-- if no default value was set for `a` and no value cannot be created from `kwargs["a"]`,
-  we do not set the attribute `a` in the instance of `A`.
