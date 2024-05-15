@@ -3,6 +3,7 @@ import warnings
 from enum import Enum
 from inspect import getmembers, isroutine
 from typing import Tuple, Type, Union, get_args, get_origin
+from types import UnionType
 
 import numpy as np
 
@@ -49,7 +50,9 @@ def _log_error(
 
 
 def _is_optional(t: type) -> bool:
-    return get_origin(t) is Union and type(None) in get_args(t)
+    # NOTE:: if t is declared as Optional[type], then get_origin(t) is Union, if it is declared as type | None, then
+    # get_origin(t) is UnionType.
+    return get_origin(t) in (Union, UnionType) and type(None) in get_args(t)
 
 
 def _is_enum(t: type) -> bool:
