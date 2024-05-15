@@ -1,3 +1,7 @@
+# v2.0.1
+
+support python 3.10 style optionals (declared as `type | None` instead of `Optional[type]`)
+
 # v2.0.0
 
 transitioned to a decorator instead of a class to inherit from.

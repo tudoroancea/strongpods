@@ -2,9 +2,14 @@
 import warnings
 from enum import Enum
 from inspect import getmembers, isroutine
+from sys import version_info
 from typing import Tuple, Type, Union, get_args, get_origin
 
 import numpy as np
+
+if version_info.minor >= 10:
+    from types import UnionType
+
 
 __all__ = [
     "set_verbosity_level",
@@ -49,7 +54,12 @@ def _log_error(
 
 
 def _is_optional(t: type) -> bool:
-    return get_origin(t) is Union and type(None) in get_args(t)
+    # NOTE:: if t is declared as Optional[type], then get_origin(t) is Union, if it is declared as type | None, then
+    # get_origin(t) is UnionType.
+    if version_info.minor < 10:
+        return get_origin(t) is Union and type(None) in get_args(t)
+    else:
+        return get_origin(t) in (Union, UnionType) and type(None) in get_args(t)
 
 
 def _is_enum(t: type) -> bool:
