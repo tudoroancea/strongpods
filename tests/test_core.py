@@ -1,4 +1,5 @@
 from enum import Enum
+from sys import version_info
 from typing import Optional, Union
 
 import numpy as np
@@ -316,7 +317,9 @@ class TestTypeDeductionHelpers:
     def test_is_optional(self):
         assert _is_optional(Optional[int])
         assert _is_optional(Union[int, None])
-        assert _is_optional(int | None)
+        if version_info.minor >= 10:
+            assert _is_optional(int | None)
+
         assert not _is_optional(int)
         assert not _is_optional(127)
 
