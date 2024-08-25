@@ -1,32 +1,28 @@
 # Copyright (c) 2024, Tudor Oancea
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "strongpods"
-version = "2.0.1"
+version = "2.1.0"
 authors = [{ name = "Tudor Oancea", email = "oancea.tudor@icloud.com" }]
-dependencies = ["numpy"]
+dependencies = ["numpy>=1.25"]
 description = "A tiny and simple library for Strongly typed Plain Old Data Structures."
+readme = "README.md"
+license = { file = "LICENSE.md" }
+requires-python = ">= 3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
 ]
-license = { file = "LICENSE.md" }
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
 
-[tool.setuptools.packages.find]
-include = ["strongpods"]
-
 [tool.pyright]
-pythonVersion = "3.11"
-extraPaths = ["strongpods"]
+pythonVersion = "3.12"
 typeCheckingMode = "standard"
-# reportUnusedImport = "none"
-# reportUnusedVariable = "none"
-# reportUnusedFunction = "none"
+extraPaths = ["strongpods"]
