@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Remove workflow label
         run: gh pr edit --remove-label test_release ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - uses: actions/checkout@v4
 
