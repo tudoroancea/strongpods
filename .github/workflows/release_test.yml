@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.event.pull_request.title, 'release') && github.event.label.name == 'test_release'
     steps:
+      - uses: actions/checkout@v4
+
       - name: Remove workflow label
-        run: gh pr edit --remove-label test_release ${{ github.event.pull_request.number }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label test_release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - uses: actions/checkout@v4
 
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/0.3.3/install.sh | sh
