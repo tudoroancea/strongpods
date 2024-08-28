@@ -23,6 +23,8 @@ classifiers = [
 test = ["pytest", "pytest-cov"]
 
 [tool.pyright]
+venv = ".venv"
+venvPath = "."
 pythonVersion = "3.12"
-typeCheckingMode = "standard"
+typeCheckingMode = "basic"
 extraPaths = ["strongpods"]
