@@ -3,14 +3,13 @@
 .vscode
 
 # Python output
-venv
+*venv*
 *.pyc
 *.pyo
 __pycache__
-venv-*
 *.egg
 *.egg-info
-.venv
 .ruff_cache
 .pytest_cache
 .coverage
+dist

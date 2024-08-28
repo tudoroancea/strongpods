@@ -1,3 +1,7 @@
+# v2.1.0
+
+Initial PyPI release.
+ 
 # v2.0.1
 
 support python 3.10 style optionals (declared as `type | None` instead of `Optional[type]`)
