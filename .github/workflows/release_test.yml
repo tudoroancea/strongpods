@@ -1,4 +1,5 @@
 # Copyright (c) 2024 Tudor Oancea
+# This workflow is based on the recommandations from https://docs.astral.sh/uv/guides/integration/github/#setting-up-python
 name: Create a test release
 
 on:
@@ -20,12 +21,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Set up uv
-        run: curl -LsSf https://astral.sh/uv/0.3.5/install.sh | sh
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: "0.4.11"
+          enable-cache: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: "pyproject.toml"
 
       - name: Override project version with dev number
         run: uv run --with requests ci/add_dev_number.py
@@ -34,7 +38,7 @@ jobs:
         run: uv sync
 
       - name: Build wheel
-        run: uvx --from build pyproject-build --installer uv
+        run: uv build
 
       - name: Upload wheel to TestPyPI
         run: uvx twine upload -r testpypi dist/*
