@@ -19,8 +19,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Set up uv
-        run: curl -LsSf https://astral.sh/uv/0.3.5/install.sh | sh
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,19 +31,18 @@ jobs:
           python-version: "3.12"
 
       - name: Override project version with dev number
-        run: uv run --with requests ci/add_dev_number.py
+        run: uv run --script ci/add_dev_number.py
 
       - name: Install project
         run: uv sync
 
       - name: Build wheel
-        run: uvx --from build pyproject-build --installer uv
+        run: uv build
 
       - name: Upload wheel to TestPyPI
-        run: uvx twine upload -r testpypi dist/*
+        run: uv publish --index testpypi
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
       - name: Install from TestPyPI
         run: uv run --with strongpods --index-url https://test.pypi.org --no-project -- python -c "from strongpods import *; print(PODS)"
